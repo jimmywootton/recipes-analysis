@@ -60,9 +60,28 @@ The resulting first five rows of the Dataframe are shown below, scroll right to 
 
 ### Univariate Analysis
 
+Now that the data is clean, I examined the distribution of ratings for recipes. As the plot shows below, a large majority of ratings are more than 4 stars. The distribution shows that ratings are skewed towards larger ratings.
+
 <iframe
   src="assets/univariate.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
+
+### Bivariate Analysis
+
+For this analysis, I examined the distribution of the ratings of recipes between diet food and non-diet foods. The graph below shows that a slightly higher percentage non-diet foods are rated 5 stars compared to diet foods.
+
+<iframe
+  src="assets/bivariate.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+## Hypothesis Testing
+
+
+
+
