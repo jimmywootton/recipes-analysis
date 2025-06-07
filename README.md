@@ -4,7 +4,7 @@ Author: James Wootton
 
 ## Introduction
 
-Dieting often makes people think of images of restrictive eating, bland meals, and uninspiring snacks. Many dieters report that "diet foods"—those specially formulated to be lower in calories, sugar, or fat—tend to be less satisfying and less flavorful than their regular counterparts. Is this just a matter of perception? or do diet foods actually taste worse? Analyzing two dataset consisting of recipes and ratings posted since 2008 on food.com, **I will try to answer the question if people would rate diet foods lower due to being lower in calories, sugar, or fat content.** To do so, we are analyzing two dataset consisting of recipes and ratings posted since 2008 on food.com.
+Dieting often makes people think of images of restrictive eating, bland meals, and uninspiring snacks. Many dieters report that "diet foods" those specially formulated to be lower in calories, sugar, or fat—tend to be less satisfying and less flavorful than their regular counterparts. Is this just a matter of perception? Or do diet foods actually taste worse? Analyzing two dataset consisting of recipes and ratings posted since 2008 on food.com, **I will try to answer the question if people would rate diet foods lower due to being lower in calories, sugar, or fat content.** To do so, we are analyzing two dataset consisting of recipes and ratings posted since 2008 on food.com.
 
 The first dataset, `recipe`, contains 83782 rows and 10 columns with the following information:
 
@@ -90,7 +90,7 @@ For this analysis, I examined the distribution of the ratings of recipes between
 
 **Significance Level:** 0.05
 
-The reason I chose a permutation test is because I have two samples, but no information about any population distributions. I am testing whether these samples where drawn from the same population or not. I chose the different in mean ratings between these two different groups because I am trying to figure out if diet recipes have lower ratings, where positive or negative differences between these two group means in forms whether one group has lower ratings than another.
+The reason I chose a permutation test is because I have two samples, but no information about any population distributions. I am testing whether these samples where drawn from the same population or not. I chose the different in mean ratings between these two different groups because I am trying to figure out if diet recipes have lower ratings, where positive or negative differences between these two group means informs whether one group has lower ratings than another.
 
 My **observed statistic** is **-0.013**, indicating the mean rating of diet recipes was slightly lower than non-diet recipes. Then we shuffled the ratings for 500 times to collect 500 simulating mean differences in the two distributions as described in the test statistic. We got a p-value of 0.0. Indicating that the difference between group means was statistically significant.
 
@@ -115,7 +115,7 @@ For my baseline model, I will use a standard linear regression model. The featur
 
 I one hot encoded the `'diet'` column with 0 and 1 values, allowing our model to properly use this as a feature. 
 
-After training my model on training and test data, my root mean squared error for the training data and test data was 0.64 and 0.67 respectively. However, aftering plotting residuals and actual vs predicted values, I found that the predicted values has extremely little variance and were centered around the mean. I suspect the reason being poor correlation between the response variable and features, as well as a response variable that is highly skewed towards larger ratings (see univariate analysis).
+After training my model for training data, my root mean squared error for the training data and test data was 0.64 and 0.67 respectively. However, after plotting residuals of actual vs predicted values, I found that the predicted values has extremely little variance and were centered around the mean. I suspect the reason being poor correlation between the response variable and features, as well as a response variable that is highly skewed towards larger ratings (see univariate analysis).
 
 <iframe
   src="assets/predicted_vs_actual.html"
@@ -128,23 +128,24 @@ After training my model on training and test data, my root mean squared error fo
 
 For my final model, I will use all the same columns as in my baseline model, with some additional columns and transformations.
 
-1. Use a function transformer to extract features from the `'nutrition'` column, yielding `calories (#)`, `total fat (PDV)`, `sugar (PDV)`, `sodium (PDV)`, `protein (PDV)`, `saturated fat (PDV)`, and `carbohydrates (PDV)`. Sugary or fatty recipes probably correlate with higher 
+1. Use a function transformer to extract features from the `'nutrition'` column, yielding `calories (#)`, `total fat (PDV)`, `sugar (PDV)`, `sodium (PDV)`, `protein (PDV)`, `saturated fat (PDV)`, and `carbohydrates (PDV)`. Sugary or fatty recipes probably correlate with higher ratings.
 
 2. One hot encode if the recipe is nutritionally dense or not. This is done by using the results from step 1, and converting calories to a percentage of daily value (based on a 2000 calorie diet). Then check if the average PDV for all the other columns is higher than the PDV for calories or not. 
 
 I originally framed this problem as a regression problem, hoping to plot average recipe ratings that are on a continuous range. However after testing on different regression models I found that continuously over predict low ratings. Average ratings are so skewed towards values between 4 and 5 stars, a loss function used in linear regression would penalize only a small fraction of low ratings very highly, while the large majority of high ratings would have very little loss. 
 
-To combat this problem, I decided to take the average ratings column and round it to the nearest integer, resulting in values 1, 2, 3, 4, or 5. This I used RandomForestClassifier, in the hopes that it would capture differences between between ratings better than the regression model.
+To combat this problem, I decided to take the average ratings column and round it to the nearest integer, resulting in values 1, 2, 3, 4, or 5, creating classes for different rounded ratings respectively. Then I used RandomForestClassifier, in the hopes that it would capture differences  between ratings better than the regression model.
 
-Using GridSearchCV, I searched for the best hyperparameters that yielded the highest weighted f1 score, where weights are inversely proportional to class frequency.
+Using `'GridSearchCV'`, I searched for the best hyperparameters that yielded the highest weighted f1 score, where weights are inversely proportional to class frequency.
+I used this metric in hopes penalize incorrect predictions for infrequent classes (1,2, and 3).
 
 Hyperparameters:
 
-1. n_estimators
+1. `'n_estimators'`
 
-2. max_depth
+2. `'max_depth'`
 
-The hyperparameters that yielded the best weighted_f1 score were 100 estimators and no max depth. The weight f1 score was 0.51. This isn't the same metric as my baseline model, however to make them more comparable, I found that the mean squared error of my final model was 1.21. Although this was worse performance in terms of mean squared error, my final model had improved accuracy for lower average ratings, where in my baseline model would have over predicted all lower average ratings by several points.
+The hyperparameters that yielded the best weighted_f1 score were 100 estimators and no `'max_depth'`. The weight f1 score was 0.51. This isn't the same metric as my baseline model, however to make them more comparable, I found that the mean squared error of my final model was 1.21. Although this was worse performance in terms of mean squared error, my final model had improved accuracy for lower average ratings, where in my baseline model would have over-predicted all lower average ratings by several points.
 
 <iframe
   src="assets/accuracy_by_class.html"
